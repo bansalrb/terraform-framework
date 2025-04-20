@@ -35,10 +35,11 @@ jobs:
 
       - name: Terraform Plan
         run: |
+          cd dev/
           terraform plan -no-color > plan.txt
 
       - name: Upload Terraform Plan as Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: terraform-plan
           path: plan.txt
