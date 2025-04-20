@@ -4,27 +4,87 @@ on:
       - dev  # Specify the branch that triggers the workflow
 
 jobs:
-  build:
-    name: build
+  terraform_workflow:
+    name: Terraform Workflow
     runs-on: ubuntu-latest
-    steps:
-      - name: Build
-        run: echo building
-  deploy:
-    name: deploy
-    runs-on: ubuntu-latest
-    needs: build
-    environment :
-      name: dev 
     permissions:
-      issues: write  #   Required for creating issues
+      issues: write
     steps:
-      - uses: trstringer/manual-approval@v1
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "1.5.2"
+
+      - name: Configure AWS Credentials
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Terraform Init
+        run: |
+          cd dev/
+          terraform init
+
+      - name: Terraform Validate
+        run: |
+          cd dev/
+          terraform validate
+
+      - name: Terraform Plan
+        id: plan
+        run: |
+          cd dev/
+          terraform plan -no-color > plan.txt
+          echo "::set-output name=has_changes::$(if [ -s plan.txt ]; then echo 'true'; else echo 'false'; fi)"
+
+      - name: Upload Terraform Plan as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: dev/plan.txt
+
+      - name: Manual Approval
+        uses: trstringer/manual-approval@v1
         with:
           secret: ${{ github.token }}
           approvers: bansalrb
-      - name: Deploy to production
-        run: echo deploying
+          issue-title: "Terraform Plan Approval Required"
+          issue-body: |
+            A Terraform plan has been generated and requires your approval.
+            Please review the plan artifact and approve to continue.
+            [Terraform Plan](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+      - name: Terraform Apply
+        if: steps.plan.outputs.has_changes == 'true'
+        run: |
+          cd dev/
+          terraform apply -auto-approve plan.txt
+
+# jobs:
+#   build:
+#     name: build
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Build
+#         run: echo building
+#   deploy:
+#     name: deploy
+#     runs-on: ubuntu-latest
+#     needs: build
+#     environment :
+#       name: dev 
+#     permissions:
+#       issues: write  #   Required for creating issues
+#     steps:
+#       - uses: trstringer/manual-approval@v1
+#         with:
+#           secret: ${{ github.token }}
+#           approvers: bansalrb
+#       - name: Deploy to production
+#         run: echo deploying
 
 # name: Terraform Plan and Apply with Manual Approval
 
