@@ -52,7 +52,7 @@ jobs:
         uses: trstringer/manual-approval@v1
         with:
           secret: ${{ secrets.GITHUB_TOKEN }}  # Use GitHub token for authorization
-          approvers: user1,user2,user3  # Replace with actual GitHub usernames
+          approvers: bansalrb  # Replace with actual GitHub usernames
           minimum-approvals: 1
           issue-title: "Manual Approval Required for Terraform Apply"
           issue-body: "Please review the Terraform Plan. Approved changes will be applied.\n\n[Download Terraform Plan Artifact](https://github.com/${{ github.repository }}/actions/artifacts)"
