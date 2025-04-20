@@ -23,56 +23,56 @@ jobs:
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Terraform Init
-        run: terraform init
+  #     - name: Terraform Init
+  #       run: terraform init
 
-      - name: Terraform Validate
-        run: terraform validate
+  #     - name: Terraform Validate
+  #       run: terraform validate
 
-      - name: Terraform Plan
-        run: |
-          terraform plan -no-color > plan.txt
+  #     - name: Terraform Plan
+  #       run: |
+  #         terraform plan -no-color > plan.txt
 
-      - name: Upload Terraform Plan as Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: terraform-plan
-          path: plan.txt
+  #     - name: Upload Terraform Plan as Artifact
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: terraform-plan
+  #         path: plan.txt
 
-  manual-approval:
-    runs-on: ubuntu-latest
-    needs: plan  # Ensure this job waits for the 'plan' job to complete
-    steps:
-      - name: Await Manual Approval
-        uses: trstringer/manual-approval@v1
-        with:
-          secret: ${{ secrets.GITHUB_TOKEN }}  # Use GitHub token for authorization
-          approvers: user1,user2,user3  # Replace with actual GitHub usernames
-          minimum-approvals: 1
-          issue-title: "Manual Approval Required for Terraform Apply"
-          issue-body: "Please review the Terraform Plan. Approved changes will be applied.\n\n[Download Terraform Plan Artifact](https://github.com/${{ github.repository }}/actions/artifacts)"
+  # manual-approval:
+  #   runs-on: ubuntu-latest
+  #   needs: plan  # Ensure this job waits for the 'plan' job to complete
+  #   steps:
+  #     - name: Await Manual Approval
+  #       uses: trstringer/manual-approval@v1
+  #       with:
+  #         secret: ${{ secrets.GITHUB_TOKEN }}  # Use GitHub token for authorization
+  #         approvers: user1,user2,user3  # Replace with actual GitHub usernames
+  #         minimum-approvals: 1
+  #         issue-title: "Manual Approval Required for Terraform Apply"
+  #         issue-body: "Please review the Terraform Plan. Approved changes will be applied.\n\n[Download Terraform Plan Artifact](https://github.com/${{ github.repository }}/actions/artifacts)"
 
-  apply:
-    runs-on: ubuntu-latest
-    needs: manual-approval  # Ensure approval is obtained before applying
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+  # apply:
+  #   runs-on: ubuntu-latest
+  #   needs: manual-approval  # Ensure approval is obtained before applying
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.3.0  # Change to your desired version
+  #     - name: Set up Terraform
+  #       uses: hashicorp/setup-terraform@v1
+  #       with:
+  #         terraform_version: 1.3.0  # Change to your desired version
 
-      - name: Configure AWS Credentials
-        run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #     - name: Configure AWS Credentials
+  #       run: |
+  #         aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Download Terraform Plan
-        uses: actions/download-artifact@v2
-        with:
-          name: terraform-plan
+  #     - name: Download Terraform Plan
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: terraform-plan
 
-      # - name: Terraform Apply
-      #   run: terraform apply -auto-approve plan.txt
+  #     # - name: Terraform Apply
+  #     #   run: terraform apply -auto-approve plan.txt
