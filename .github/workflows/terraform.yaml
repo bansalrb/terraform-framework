@@ -1,6 +1,7 @@
-name: main
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - dev  # Specify the branch that triggers the workflow
 
 jobs:
   build:
