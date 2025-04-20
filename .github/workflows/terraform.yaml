@@ -1,73 +1,96 @@
-name: Terraform Plan and Apply with Manual Approval
-
+name: main
 on:
-  push:
-    branches:
-      - dev  # Specify the branch that triggers the workflow
+  workflow_dispatch:
 
 jobs:
-  plan:
+  build:
+    name: build
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.5.2
-          terraform_wrapper: false
-
-      - name: Configure AWS Credentials
-        run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-      - name: Terraform Init
-        run: |
-          cd dev/
-          terraform init
-
-      - name: Terraform Validate
-        run: |
-           cd dev/
-           terraform validate
-
-      - name: Terraform Plan
-        run: |
-          cd dev/
-          terraform plan -no-color > plan.txt
-
-      - name: Upload Terraform Plan as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: terraform-plan
-          path: plan.txt
-
-  apply:
+      - name: Build
+        run: echo building
+  deploy:
+    name: deploy
     runs-on: ubuntu-latest
-    needs: plan
-    environment :
-      name: dev  # Ensure approval is obtained before applying
+    needs: build
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+      - uses: trstringer/manual-approval@v1
         with:
-          terraform_version: 1.5.2
-          terraform_wrapper: false
+          secret: ${{ github.TOKEN }}
+          approvers: bansalrb
+      - name: Deploy to production
+        run: echo deploying
 
-      - name: Configure AWS Credentials
-        run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+# name: Terraform Plan and Apply with Manual Approval
 
-      - name: Download Terraform Plan
-        uses: actions/download-artifact@v4
-        with:
-          name: terraform-plan
+# on:
+#   push:
+#     branches:
+#       - dev  # Specify the branch that triggers the workflow
 
-      - name: Terraform Apply
-        run: terraform apply plan.txt
+# jobs:
+#   plan:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Check out code
+#         uses: actions/checkout@v2
+
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v2
+#         with:
+#           terraform_version: 1.5.2
+#           terraform_wrapper: false
+
+#       - name: Configure AWS Credentials
+#         run: |
+#           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+#       - name: Terraform Init
+#         run: |
+#           cd dev/
+#           terraform init
+
+#       - name: Terraform Validate
+#         run: |
+#            cd dev/
+#            terraform validate
+
+#       - name: Terraform Plan
+#         run: |
+#           cd dev/
+#           terraform plan -no-color > plan.txt
+
+#       - name: Upload Terraform Plan as Artifact
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: terraform-plan
+#           path: plan.txt
+
+#   apply:
+#     runs-on: ubuntu-latest
+#     needs: plan
+#     environment :
+#       name: dev  # Ensure approval is obtained before applying
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v2
+#         with:
+#           terraform_version: 1.5.2
+#           terraform_wrapper: false
+
+#       - name: Configure AWS Credentials
+#         run: |
+#           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+#       - name: Download Terraform Plan
+#         uses: actions/download-artifact@v4
+#         with:
+#           name: terraform-plan
+
+#       - name: Terraform Apply
+#         run: terraform apply plan.txt
