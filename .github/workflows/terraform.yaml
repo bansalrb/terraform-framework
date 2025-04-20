@@ -14,8 +14,10 @@ jobs:
     name: deploy
     runs-on: ubuntu-latest
     needs: build
+    environment :
+      name: dev 
     permissions:
-      issues: write  # Required for creating issues
+      issues: write  #   Required for creating issues
     steps:
       - uses: trstringer/manual-approval@v1
         with:
