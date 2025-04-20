@@ -14,10 +14,12 @@ jobs:
     name: deploy
     runs-on: ubuntu-latest
     needs: build
+    permissions:
+      issues: write  # Required for creating issues
     steps:
       - uses: trstringer/manual-approval@v1
         with:
-          secret: ${{ github.TOKEN }}
+          secret: ${{ github.token }}
           approvers: bansalrb
       - name: Deploy to production
         run: echo deploying
