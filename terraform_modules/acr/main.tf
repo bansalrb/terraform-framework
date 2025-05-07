@@ -1,13 +1,16 @@
-resource "aws_ecr_repository" "my_ecr" {
-  name                 = var.ecr_name
-  image_scanning_configuration {
-    scan_on_push = true
+resource "azurerm_container_registry" "acr" {
+  name                = var.acr_name
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  sku                 = var.sku
+  admin_enabled       = var.admin_enabled
+
+  identity {
+    type = "SystemAssigned"
   }
-  lifecycle {
-    prevent_destroy = true
-  }
+  tags = var.tags
 }
 
-output "repository_url" {
-  value = aws_ecr_repository.my_ecr.repository_url
-}
+
+
+

@@ -1,8 +1,13 @@
 terraform {
-  backend "s3" {
-    bucket  = "tfstatedevrohan"
-    key     = "dev/terraform.tfstate"
-    region  = "ap-south-1"
-    encrypt = true
+  backend "azurerm" {
+    resource_group_name  = "test"
+    storage_account_name = "tfstatefoxapp"
+    container_name       = "dev"
+    key                  = "terraform.tfstate"
   }
 }
+
+
+
+
+

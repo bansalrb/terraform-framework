@@ -1,8 +1,53 @@
-variable "create_ecr" {
+########################  Common Variables ##################################
+
+variable "resource_group_name" {
+  description = "The name of the resource group in which to create the ACR."
+  type        = string
+}
+
+variable "location" {
+  description = "The Azure region where the ACR will be created."
+  type        = string
+}
+
+variable "tags" {
+  type = map(string)
+}
+
+########################  Flag Variables #####################################
+variable "create_acr" {
   type = bool
 }
 
-variable "ecr_name" {
-  type = list
-  default = []
+variable "create_kv" {
+  type = bool
+}
+
+######################## Azure Container Registry ################################
+
+variable "acr_name" {
+  description = "The name of the Azure Container Registry."
+  type        = list(string)
+  default = [""]
+}
+
+variable "sku" {
+  description = "The SKU name of the Azure Container Registry (e.g., Basic, Standard, Premium)."
+  type        = string
+  default     = "Standard"
+}
+
+variable "admin_enabled" {
+  description = "Specifies whether the admin user is enabled."
+  type        = bool
+  default     = true
+}
+
+######################## Azure Keyvault ################################
+variable "kv_name" {
+  type = list(string)
+}
+
+variable "tenant_id" {
+  type = string
 }
