@@ -19,9 +19,9 @@ variable "create_acr" {
   type = bool
 }
 
-variable "create_kv" {
-  type = bool
-}
+# variable "create_kv" {
+#   type = bool
+# }
 
 ######################## Azure Container Registry ################################
 
@@ -44,10 +44,10 @@ variable "admin_enabled" {
 }
 
 ######################## Azure Keyvault ################################
-variable "kv_name" {
-  type = list(string)
-}
+# variable "kv_name" {
+#   type = list(string)
+# }
 
-variable "tenant_id" {
-  type = string
-}
+# variable "tenant_id" {
+#   type = string
+# }

@@ -8,7 +8,7 @@ tags = {
 
 ########################  Flag Variables #####################################
 create_acr = true
-create_kv = true
+# create_kv = true
 
 ######################## Azure Container Registry ################################
 acr_name = ["foxappacrdev"]
@@ -16,5 +16,5 @@ sku = "Standard"
 admin_enabled = true
 
 
-kv_name = [ "test01" ]
-tenant_id = ""
+# kv_name = [ "test01" ]
+# tenant_id = ""

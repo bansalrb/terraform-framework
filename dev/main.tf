@@ -9,11 +9,11 @@ module "acr" {
     tags = var.tags
 }
 
-module "kv" {
-  source = "../terraform_modules/kv"
-  count = var.create_kv ? length(var.kv_name) : 0
-  resource_group_name = var.resource_group_name
-  location = var.location
-  kv_name = element(var.kv_name,count.index)
-  tenant_id = var.tenant_id
-}
+# module "kv" {
+#   source = "../terraform_modules/kv"
+#   count = var.create_kv ? length(var.kv_name) : 0
+#   resource_group_name = var.resource_group_name
+#   location = var.location
+#   kv_name = element(var.kv_name,count.index)
+#   tenant_id = var.tenant_id
+# }
